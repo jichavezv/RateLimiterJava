@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.ratelimiter.entity.User;
-import com.ratelimiter.service.RateLimiter;
+import com.ratelimiter.entity.UserRequestInfo;
 import com.ratelimiter.service.UserService;
 
 @SpringBootTest
@@ -99,8 +99,8 @@ public class UserControllerTest {
 	
 	@Test
 	public void testRateLimitInformation() {
-		ResponseEntity<RateLimiter.UserRequestInfo> response = controller.getRateLimitInfo(userTest.getId());
-		RateLimiter.UserRequestInfo body = response.getBody();
+		ResponseEntity<UserRequestInfo> response = controller.getRateLimitInfo(userTest.getId());
+		UserRequestInfo body = response.getBody();
 		System.out.println(body);
 		
 		assertNull(body);
