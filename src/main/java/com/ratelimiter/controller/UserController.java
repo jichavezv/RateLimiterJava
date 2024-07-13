@@ -1,6 +1,7 @@
 package com.ratelimiter.controller;
 
 import com.ratelimiter.entity.User;
+import com.ratelimiter.entity.UserRequestInfo;
 import com.ratelimiter.service.RateLimiter;
 import com.ratelimiter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,50 +20,59 @@ public class UserController {
     @Autowired
     private RateLimiter rateLimiter;
 
+    /**
+     * Obtener todos los usuarios.
+     * No está protegido por el rate limit.
+     */
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        // No rate limiting for fetching all users
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    /**
+     * Obtener un usuario por ID.
+     * No está protegido por el rate limit.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
-        if (user != null && rateLimiter.isAllowed(id, user.getRole())) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
+        return user != null ? new ResponseEntity<>(user, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Crear un nuevo usuario.
+     * No está protegido por el rate limit.
+     */
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        Long userId = user.getId();
-        if (rateLimiter.isAllowed(userId, user.getRole())) {
-            User createdUser = userService.createUser(user);
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
+        User createdUser = userService.createUser(user);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
+    /**
+     * Actualizar un usuario existente.
+     * No está protegido por el rate limit.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        if (rateLimiter.isAllowed(id, user.getRole())) {
-            User updatedUser = userService.updateUser(id, user);
-            return updatedUser != null ? new ResponseEntity<>(updatedUser, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
+        User updatedUser = userService.updateUser(id, user);
+        return updatedUser != null ? new ResponseEntity<>(updatedUser, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Eliminar un usuario.
+     * No está protegido por el rate limit.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        if (user != null && rateLimiter.isAllowed(id, user.getRole())) {
-            userService.deleteUser(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    /**
+     * Ejecutar una tarea para un usuario específico.
+     * Este endpoint está protegido por el rate limit.
+     */
     @GetMapping("/{id}/execute-task")
     public ResponseEntity<String> executeTask(@PathVariable Long id) {
         User user = userService.getUserById(id);
@@ -72,9 +82,12 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
     }
 
+    /**
+     * Obtener información de rate limit para un usuario específico.
+     */
     @PostMapping("/admin/rate-limit-information")
-    public ResponseEntity<RateLimiter.UserRequestInfo> getRateLimitInfo(@RequestBody Long userId) {
-        RateLimiter.UserRequestInfo info = rateLimiter.getUserRequestInfo(userId);
+    public ResponseEntity<UserRequestInfo> getRateLimitInfo(@RequestBody Long userId) {
+        UserRequestInfo info = rateLimiter.getUserRequestInfo(userId);
         return info != null ? new ResponseEntity<>(info, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
