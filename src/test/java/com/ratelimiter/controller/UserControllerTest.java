@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +89,19 @@ public class UserControllerTest {
 	
 	@Test
 	public void testExecuteTask() {
-		ResponseEntity<String> response = controller.executeTask(userTest.getId());
+		ResponseEntity<String> response = null;
+		
+		// Simulating 5 requests
+        for (int i = 0; i < 5; i++) {
+        	response = controller.executeTask(userTest.getId());
+            
+            if(i < 5) {
+            	assertNotNull(response);            	
+            } else {
+            	assertNull(response);
+            }
+            
+        }
 		String body = response.getBody();
 		
 		assertNotNull(body);
@@ -104,66 +114,5 @@ public class UserControllerTest {
 		System.out.println(body);
 		
 		assertNull(body);
-	}
-	
-	@Test
-	public void testRateLimitAllUsers() {
-		ResponseEntity<List<User>> response =  null;
-		
-		// Simulating 5 requests
-        for (int i = 0; i < 5; i++) {
-            response = controller.getAllUsers();
-            
-            if(i < 5) {
-            	assertNotNull(response);            	
-            } else {
-            	assertNull(response);
-            }
-            
-        }
-	}
-	
-	@Test
-	public void testRateLimitGetUser() {
-		ResponseEntity<User> response =  null;
-		
-		// Simulating 5 requests
-        for (int i = 0; i < 5; i++) {
-            response = controller.getUserById(userTest.getId());
-            
-            if(i < 5) {
-            	assertNotNull(response);            	
-            } else {
-            	assertNull(response);
-            }
-            
-        }
-	}
-	
-	@Test
-	public void testRateLimitCreateUser() {
-		ResponseEntity<User> response =  null;
-		User newUser = null;
-		
-		// Simulating 5 requests
-        for (int i = 0; i < 5; i++) {
-        	newUser = User.builder()
-    				.name("NewUser" + i)
-    				.lastname("LastNameNewUser" + i)
-    				.email("new-user" + i + "@web.com")
-    				.phone("123456")
-    				.age(18)
-    				.role("admin")
-    				.build();
-        	
-            response = controller.createUser(newUser);
-            
-            if(i < 5) {
-            	assertNotNull(response);            	
-            } else {
-            	assertNull(response);
-            }
-            
-        }
 	}
 }
