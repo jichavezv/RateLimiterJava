@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ratelimiter.dto.RateLimiterRequestDTO;
+import com.ratelimiter.dto.RateLimiterResponseDTO;
 import com.ratelimiter.dto.UserDTO;
 import com.ratelimiter.entity.User;
 import com.ratelimiter.entity.UserRequestInfo;
+import com.ratelimiter.mapper.RateLimiterMapper;
 import com.ratelimiter.mapper.UserMapper;
 import com.ratelimiter.service.RateLimiter;
 import com.ratelimiter.service.UserService;
@@ -127,8 +130,8 @@ public class UserController {
      * @since Jul/13/2024
      */
     @PostMapping("/admin/rate-limit-information")
-    public ResponseEntity<UserRequestInfo> getRateLimitInfo(@RequestBody Long userId) {
-        UserRequestInfo info = rateLimiter.getUserRequestInfo(userId);
-        return info != null ? new ResponseEntity<>(info, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<RateLimiterResponseDTO> getRateLimitInfo(@RequestBody RateLimiterRequestDTO dto) {
+        UserRequestInfo info = rateLimiter.getUserRequestInfo(dto.getUserId());
+        return info != null ? new ResponseEntity<>(RateLimiterMapper.MAPPER.entityToDto(info), HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
