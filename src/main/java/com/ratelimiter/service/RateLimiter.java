@@ -6,4 +6,6 @@ public interface RateLimiter {
     boolean isAllowed(Long userId, String role);
 
     UserRequestInfo getUserRequestInfo(Long userId);
+    
+    boolean isBlocked(Long userId);
 }

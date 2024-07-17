@@ -1,16 +1,18 @@
-package com.ratelimiter.entity;
+package com.ratelimiter.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class User {
-    private Long id;
+public class UserDTO {
+	private Long id;
     private String name;
     private String lastname;
     private String email;
