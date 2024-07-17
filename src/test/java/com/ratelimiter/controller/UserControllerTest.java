@@ -11,8 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.ratelimiter.dto.RateLimiterRequestDTO;
+import com.ratelimiter.dto.RateLimiterResponseDTO;
+import com.ratelimiter.dto.UserDTO;
 import com.ratelimiter.entity.User;
-import com.ratelimiter.entity.UserRequestInfo;
+import com.ratelimiter.mapper.UserMapper;
 import com.ratelimiter.service.UserService;
 
 @SpringBootTest
@@ -48,8 +51,8 @@ public class UserControllerTest {
 				.role("admin")
 				.build();
 		
-		ResponseEntity<User> createdUser = controller.createUser(newUser);
-		User userResponse = createdUser.getBody();
+		ResponseEntity<UserDTO> createdUser = controller.createUser(UserMapper.MAPPER.entityToDto(newUser));
+		UserDTO userResponse = createdUser.getBody();
 		
 		assertNotNull(userResponse);
 		assertEquals(userResponse.getName(), newUser.getName());
@@ -57,8 +60,8 @@ public class UserControllerTest {
 	
 	@Test
 	public void testGetUserById() {
-		ResponseEntity<User> data = controller.getUserById(userTest.getId());
-		User responseUser = data.getBody();
+		ResponseEntity<UserDTO> data = controller.getUserById(userTest.getId());
+		UserDTO responseUser = data.getBody();
 
 		assertNotNull(data);
 		assertNotNull(responseUser);
@@ -70,8 +73,8 @@ public class UserControllerTest {
 		userTest.setName("User Updated");
 		userTest.setEmail("new.email@web.com");
 
-		ResponseEntity<User> response = controller.updateUser(this.userTest.getId(), userTest);
-		User userResponse = response.getBody();
+		ResponseEntity<UserDTO> response = controller.updateUser(this.userTest.getId(), UserMapper.MAPPER.entityToDto(userTest));
+		UserDTO userResponse = response.getBody();
 
 		assertNotNull(response);
 		assertNotNull(userResponse);
@@ -109,8 +112,12 @@ public class UserControllerTest {
 	
 	@Test
 	public void testRateLimitInformation() {
-		ResponseEntity<UserRequestInfo> response = controller.getRateLimitInfo(userTest.getId());
-		UserRequestInfo body = response.getBody();
+		RateLimiterRequestDTO dto = RateLimiterRequestDTO.builder()
+				.userId(userTest.getId())
+				.build();
+		
+		ResponseEntity<RateLimiterResponseDTO> response = controller.getRateLimitInfo(dto);
+		RateLimiterResponseDTO body = response.getBody();
 		System.out.println(body);
 		
 		assertNull(body);
