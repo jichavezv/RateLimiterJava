@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 import com.ratelimiter.dto.RateLimiterRequestDTO;
@@ -121,5 +122,28 @@ public class UserControllerTest {
 		System.out.println(body);
 		
 		assertNull(body);
+	}
+	
+	@Test
+	public void testBlockUser() {
+		ResponseEntity<String> response = null;
+		HttpStatusCode statusCode = null;
+		
+		// Simulating 8 request
+        for (int i = 1; i < 10; i++) {
+        	response = controller.executeTask(userTest.getId());
+            statusCode = response.getStatusCode();
+            
+            System.out.println("i: " + i + " / Status Code: " + statusCode.value());
+            
+            if(i < 6) {
+            	assertEquals(statusCode.value(), 200);            	
+            } else if(i > 7) {
+            	assertEquals(statusCode.value(), 503);
+            } else {
+            	assertEquals(statusCode.value(), 429);
+            }
+            
+        }
 	}
 }

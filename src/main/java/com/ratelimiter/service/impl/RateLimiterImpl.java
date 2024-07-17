@@ -50,9 +50,6 @@ public class RateLimiterImpl implements RateLimiter {
         // Verificar si el usuario ha excedido el límite de requests
         if (userRequestInfo.getRequestCount() > limit) {
             userRequestInfo.incrementConsecutive429s();
-            if (userRequestInfo.getConsecutive429s() >= maxConsecutive429) {
-                userRequestInfo.setBlockEndTime(now.plusSeconds(blockTimeInSeconds));
-            }
             userRequestMap.put(userId, userRequestInfo);
             return false;
         }
@@ -66,5 +63,20 @@ public class RateLimiterImpl implements RateLimiter {
     public UserRequestInfo getUserRequestInfo(Long userId) {
         return userRequestMap.get(userId);
     }
-}
 
+	@Override
+	public boolean isBlocked(Long userId) {
+		// TODO Auto-generated method stub
+		boolean flag = false;
+		LocalDateTime now = LocalDateTime.now();
+		UserRequestInfo userRequestInfo = userRequestMap.getOrDefault(userId, new UserRequestInfo(0, now, 0, null));
+		
+		if (userRequestInfo.getConsecutive429s() >= maxConsecutive429) {
+            userRequestInfo.setBlockEndTime(now.plusSeconds(blockTimeInSeconds));
+            userRequestMap.put(userId, userRequestInfo);
+            flag = true;
+        }
+		
+        return flag;
+	}
+}

@@ -119,6 +119,9 @@ public class UserController {
         if (user != null && rateLimiter.isAllowed(id, user.getRole())) {
             return new ResponseEntity<>("Executed", HttpStatus.OK);
         }
+        if(rateLimiter.isBlocked(id)) {
+        	return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
+        }
         return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
     }
     
