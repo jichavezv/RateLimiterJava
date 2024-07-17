@@ -11,25 +11,22 @@ import java.util.Map;
 
 @Service
 public class RateLimiterImpl implements RateLimiter {
-    private final int regularLimit;
-    private final int premiumLimit;
-    private final long timeWindowInSeconds;
-    private final int maxConsecutive429;
-    private final long blockTimeInSeconds;
+	@Value("${ratelimiter.regularLimit}")
+    private int regularLimit;
+	
+	@Value("${ratelimiter.premiumLimit}")
+    private int premiumLimit;
+	
+	@Value("${ratelimiter.timeWindowInSeconds}")
+    private long timeWindowInSeconds;
+	
+	@Value("${ratelimiter.maxConsecutive429}")
+    private int maxConsecutive429;
+	
+	@Value("${ratelimiter.blockTimeInSeconds}")
+    private long blockTimeInSeconds;
+	
     private final Map<Long, UserRequestInfo> userRequestMap = new HashMap<>();
-
-    public RateLimiterImpl(
-            @Value("${ratelimiter.regularLimit}") int regularLimit,
-            @Value("${ratelimiter.premiumLimit}") int premiumLimit,
-            @Value("${ratelimiter.timeWindowInSeconds}") long timeWindowInSeconds,
-            @Value("${ratelimiter.maxConsecutive429}") int maxConsecutive429,
-            @Value("${ratelimiter.blockTimeInSeconds}") long blockTimeInSeconds) {
-        this.regularLimit = regularLimit;
-        this.premiumLimit = premiumLimit;
-        this.timeWindowInSeconds = timeWindowInSeconds;
-        this.maxConsecutive429 = maxConsecutive429;
-        this.blockTimeInSeconds = blockTimeInSeconds;
-    }
 
     @Override
     public synchronized boolean isAllowed(Long userId, String role) {

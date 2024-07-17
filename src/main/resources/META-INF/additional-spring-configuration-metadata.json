@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "ratelimiter.regularLimit",
+    "type": "java.lang.String",
+    "description": "A description for 'ratelimiter.regularLimit'"
+  },
+  {
+    "name": "ratelimiter.premiumLimit",
+    "type": "java.lang.String",
+    "description": "A description for 'ratelimiter.premiumLimit'"
+  },
+  {
+    "name": "ratelimiter.timeWindowInSeconds",
+    "type": "java.lang.String",
+    "description": "A description for 'ratelimiter.timeWindowInSeconds'"
+  },
+  {
+    "name": "ratelimiter.maxConsecutive429",
+    "type": "java.lang.String",
+    "description": "A description for 'ratelimiter.maxConsecutive429'"
+  },
+  {
+    "name": "ratelimiter.blockTimeInSeconds",
+    "type": "java.lang.String",
+    "description": "A description for 'ratelimiter.blockTimeInSeconds'"
+  }
+]}
